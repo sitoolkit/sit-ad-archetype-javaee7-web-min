@@ -6,6 +6,12 @@
   <property name="resdir" value="${basedir}/archetype/src" />
 
   
+  <property name="mvn.cmd" value="${mvn.home}/bin/mvn"/>
+  <condition property="mvn.cmd" value="${mvn.home}/bin/mvn.bat">
+    <os family="windows"/>
+  </condition>
+
+  
   <target name="install"
           depends="01_copy-archetype-work,02_create-from-archetype,03_copy-archetype-resource,04_install-archetype">
   </target>
@@ -37,7 +43,7 @@
 
   <target name="02_create-from-archetype">
 
-    <exec executable="${maven.home}/mvn" dir="${workdir}">
+    <exec executable="${mvn.cmd}" dir="${workdir}">
       <env key="JAVA_HOME" value="${java.home}" />
       <arg value="-Darchetype.filteredExtentions=java,xml,txt,groovy,cs,mdo,aj,jsp,gsp,vm,html,xhtml,properties,.classpath,.project,launch,component" />
       <arg value="archetype:create-from-project" />
@@ -72,7 +78,7 @@
 
   <target name="04_install-archetype">
 
-    <exec executable="${maven.home}/mvn" dir="${basedir}/archetype">
+    <exec executable="${mvn.cmd}" dir="${basedir}/archetype">
       <env key="JAVA_HOME" value="${java.home}" />
       <arg value="clean" />
       <arg value="install" />
@@ -82,7 +88,7 @@
 
   <target name="05_deploy-archetype">
 
-    <exec executable="${maven.home}/mvn" dir="${basedir}/archetype">
+    <exec executable="${mvn.cmd}" dir="${basedir}/archetype">
       <env key="JAVA_HOME" value="${java.home}" />
       <arg value="-P"/>
       <arg value="release"/>
