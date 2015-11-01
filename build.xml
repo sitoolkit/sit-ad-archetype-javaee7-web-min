@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="javaee7-min-hibernate" default="hbm2java" basedir=".">
+
+  <taskdef name="hibernatetool"
+           classname="org.hibernate.tool.ant.HibernateToolTask"
+           classpath="${maven.classpath}" />
+
+  <target name="hbm2java">
+    <hibernatetool destdir="${basedir}/target/generated-sources/hibeanatetool" >
+
+      <jdbcconfiguration revengfile="tools/dev/hibernate/hibernate.reveng.xml" propertyFile="target/hibernate.properties"/>
+      <hbm2java jdk5="true" ejb3="true" />
+      
+    </hibernatetool>
+  </target>
+</project>

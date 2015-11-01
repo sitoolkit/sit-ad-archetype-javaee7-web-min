@@ -17,9 +17,15 @@
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derbyclient</artifactId>
-      <version>10.10.1.1</version>
+      <version>${derby.client.version}</version>
     </dependency>
   </dependencies>
+  <parent>
+    <groupId>org.sitoolkit.ad.archetype</groupId>
+    <artifactId>javaee7-min</artifactId>
+    <relativePath>../../pom.xml</relativePath>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
   <properties>
     <ant.target>hbm2java</ant.target>
   </properties>
@@ -34,11 +40,15 @@
         <configuration>
           <target>
             <property name="maven.classpath" refid="maven.runtime.classpath" />
+            <property name="hibernate.connection.url" refid="db.jdbc.url"/>
+            <property name="hibernate.connection.username" refid="db.username"/>
+            <property name="hibernate.connection.password" refid="db.password"/>
             <ant antfile="${basedir}/build.xml" target="${ant.target}" />
           </target>
         </configuration>
       </plugin>
     </plugins>
   </build>
+
 
 </project>

@@ -64,13 +64,13 @@
       <property name="connectionAttributes" value=";create=true" />
     </jdbc-connection-pool>
     <jdbc-connection-pool is-isolation-level-guaranteed="false"
-      name="javaee7-min-pool" datasource-classname="org.apache.derby.jdbc.ClientConnectionPoolDataSource40"
+      name="javaee7-min-pool" datasource-classname="${db.jdbc.dsclass}"
       res-type="javax.sql.DataSource">
-      <property name="databaseName" value="javaee7-min-db" />
-      <property name="user" value="app" />
-      <property name="password" value="app" />
-      <property name="portNumber" value="1527" />
-      <property name="serverName" value="localhost" />
+      <property name="databaseName" value="${db.name}" />
+      <property name="user" value="${db.username}" />
+      <property name="password" value="${db.password}" />
+      <property name="portNumber" value="${db.port}" />
+      <property name="serverName" value="${db.host}" />
       <property name="characterEncoding" value="utf8" />
     </jdbc-connection-pool>
   </resources>
@@ -195,7 +195,7 @@
           </protocol>
         </protocols>
         <network-listeners>
-          <network-listener port="8080" protocol="http-listener" transport="tcp" name="http-listener" thread-pool="http-thread-pool" enabled="true" />
+          <network-listener port="${as.port}" protocol="http-listener" transport="tcp" name="http-listener" thread-pool="http-thread-pool" enabled="true" />
           <network-listener port="0" protocol="https-listener" transport="tcp" name="https-listener" thread-pool="http-thread-pool" enabled="false" />
         </network-listeners>
         <transports>

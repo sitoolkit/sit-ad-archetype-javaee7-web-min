@@ -26,6 +26,17 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <webappDirectory>${project.build.directory}/webapp</webappDirectory>
+    <derby.client.version>10.10.1.1</derby.client.version>
+    <db.jdbc.driver>org.apache.derby.jdbc.ClientDriver</db.jdbc.driver>
+    <db.jdbc.dsclass>org.apache.derby.jdbc.ClientConnectionPoolDataSource40</db.jdbc.dsclass>
+    <db.name>${project.artifactId}-db</db.name>
+    <db.host>localhost</db.host>
+    <db.port>1527</db.port>
+    <db.jdbc.url>jdbc:derby://${db.host}:${db.port}/${db.name};create=true</db.jdbc.url>
+    <db.username>app</db.username>
+    <db.password>app</db.password>
+    <as.port>8080</as.port>
+    <gentool.destdir>${project.build.directory}/generated-sources/hibernatetool</gentool.destdir>
   </properties>
 
   <!-- Build Settings -->
@@ -53,7 +64,7 @@
             </goals>
             <configuration>
               <sources>
-                <source>${project.build.directory}/generated-sources/hibernatetool/</source>
+                <source>${gentool.destdir}</source>
               </sources>
             </configuration>
           </execution>
@@ -61,5 +72,140 @@
       </plugin>
     </plugins>
   </build>
+
+  <!-- Environment Settings -->
+  <profiles>
+    <profile>
+      <id>derby</id>
+      <build>
+        <defaultGoal>derby:run</defaultGoal>
+        <plugins>
+          <plugin>
+            <groupId>org.carlspring.maven</groupId>
+            <artifactId>derby-maven-plugin</artifactId>
+            <version>1.10</version>
+            <configuration>
+                <derbyHome>${basedir}/tools/db/target</derbyHome>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <id>flyway</id>
+      <build>
+        <defaultGoal>compile flyway:migrate</defaultGoal>
+        <plugins>
+          <plugin>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-maven-plugin</artifactId>
+            <version>3.2.1</version>
+            <configuration>
+              <url>${db.jdbc.url}</url>
+              <user>${db.username}</user>
+              <locations>
+                <location>filesystem:${basedir}/tools/dev/flyway</location>
+              </locations>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derbyclient</artifactId>
+                <version>${derby.client.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>hibernate-tools</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-tools</artifactId>
+          <version>4.3.1.Final</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.derby</groupId>
+          <artifactId>derbyclient</artifactId>
+          <version>${derby.client.version}</version>
+        </dependency>
+      </dependencies>
+      <properties>
+        <ant.target>hbm2java</ant.target>
+      </properties>
+      <build>
+        <defaultGoal>antrun:run</defaultGoal>
+        <resources>
+          <resource>
+            <directory>${basedir}/tools/dev/hibernate</directory>
+            <includes>
+              <include>hibernate.properties</include>
+            </includes>
+            <targetPath>${project.build.directory}</targetPath>
+            <filtering>true</filtering>
+          </resource>
+        </resources>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.8</version>
+            <configuration>
+              <target>
+                <property name="maven.classpath" refid="maven.runtime.classpath" />
+                <property name="destdir" value="${gentool.destdir}"/>
+                <ant antfile="${basedir}/build.xml" target="${ant.target}" />
+              </target>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <id>embedded-glassfish</id>
+      <build>
+        <defaultGoal>process-resources embedded-glassfish:run</defaultGoal>
+        <resources>
+          <resource>
+            <directory>${basedir}/tools/as/embedded-glassfish</directory>
+            <includes>
+              <include>domain.xml</include>
+            </includes>
+            <filtering>true</filtering>
+            <targetPath>${project.build.directory}</targetPath>
+          </resource>
+        </resources>
+        <plugins>
+          <plugin>
+            <groupId>org.glassfish.embedded</groupId>
+            <artifactId>maven-embedded-glassfish-plugin</artifactId>
+            <version>4.1.1</version>
+            <configuration>
+              <configFile>${project.build.directory}/domain.xml</configFile>
+              <systemProperties>
+                <property>glassfish.embedded.tmpdir=${project.build.directory}</property>
+              </systemProperties>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>deploy</goal>
+                </goals>
+                <phase>none</phase>
+                <configuration>
+                  <app>${webappDirectory}</app>
+                  <contextRoot>/</contextRoot>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

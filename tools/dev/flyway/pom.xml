@@ -4,10 +4,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <!-- The Basics -->
-  <groupId>org.sitoolkit.ad.archetype</groupId>
   <artifactId>flyway</artifactId>
-  <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
+  <parent>
+    <groupId>org.sitoolkit.ad.archetype</groupId>
+    <artifactId>javaee7-min</artifactId>
+    <relativePath>tools/pom.xml</relativePath>
+  </parent>
 
   <!-- Build Settings -->
   <build>
@@ -18,7 +21,7 @@
         <artifactId>flyway-maven-plugin</artifactId>
         <version>3.2.1</version>
         <configuration>
-          <url>jdbc:derby://localhost:1527/javaee7-min-db;create=true</url>
+          <url>${db.jdbc.url}</url>
           <user>app</user>
           <locations>
             <location>filesystem:${basedir}</location>
@@ -28,7 +31,7 @@
           <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derbyclient</artifactId>
-            <version>10.10.1.1</version>
+            <version>${derby.client.version}</version>
           </dependency>
         </dependencies>
       </plugin>
