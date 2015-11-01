@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="javaee7-min" basedir="." default="build-all">
+<project name="javaee7-min" basedir="." default="install">
 
   <property environment="env" />
   <property name="workdir" value="${basedir}/../../work" />
   <property name="resdir" value="${basedir}/archetype/src" />
 
   
-  <target name="build-all"
+  <target name="install"
           depends="01_copy-archetype-work,02_create-from-archetype,03_copy-archetype-resource,04_install-archetype">
   </target>
 
+  
+  <target name="deploy"
+          depends="01_copy-archetype-work,02_create-from-archetype,03_copy-archetype-resource,05_deploy-archetype">
+  </target>
 
+  
   <target name="01_copy-archetype-work">
 
     <delete dir="${workdir}" />
@@ -71,6 +76,19 @@
       <env key="JAVA_HOME" value="${java.home}" />
       <arg value="clean" />
       <arg value="install" />
+    </exec>
+
+  </target>
+
+  <target name="05_deploy-archetype">
+
+    <exec executable="${maven.home}/mvn" dir="${basedir}/archetype">
+      <env key="JAVA_HOME" value="${java.home}" />
+      <arg value="-P"/>
+      <arg value="release"/>
+      <arg value="-Dmaven.test.skip=true"/>
+      <arg value="clean" />
+      <arg value="deploy" />
     </exec>
 
   </target>
