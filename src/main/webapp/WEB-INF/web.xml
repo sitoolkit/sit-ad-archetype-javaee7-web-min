@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd http://www.w3.org/XML/1998/namespace http://www.w3.org/2001/xml.xsd"
-  version="3.1">
-
-  <display-name>javaee7-min</display-name>
-
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd http://www.w3.org/XML/1998/namespace http://www.w3.org/2001/xml.xsd" version="3.1">
+  <display-name>javaee7-web-min</display-name>
   <context-param>
     <param-name>javax.faces.FACELETS_REFRESH_PERIOD</param-name>
     <param-value>1</param-value>
@@ -25,11 +21,9 @@
     <param-name>javax.faces.PROJECT_STAGE</param-name>
     <param-value>Development</param-value>
   </context-param>
-
   <welcome-file-list>
     <welcome-file>index.xhtml</welcome-file>
   </welcome-file-list>
-
   <resource-ref>
     <res-ref-name>jdbc/javaee7-min-ds</res-ref-name>
     <res-type>javax.sql.DataSource</res-type>
@@ -37,5 +31,4 @@
     <res-sharing-scope>Shareable</res-sharing-scope>
     <lookup-name>java:module/env/jdbc/javaee7-min-ds</lookup-name>
   </resource-ref>
-
 </web-app>

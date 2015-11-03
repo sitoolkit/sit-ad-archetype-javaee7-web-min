@@ -5,7 +5,7 @@
 
   <!-- The Basics -->
   <groupId>org.sitoolkit.ad.archetype</groupId>
-  <artifactId>javaee7-min</artifactId>
+  <artifactId>javaee7-web-min</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>maven-archetype</packaging>
   <properties>
@@ -74,8 +74,9 @@
     </plugins>
   </build>
 
-  <name>sit-ad-archetype-javaee7-min</name>
-  <description>archetype for sit-wt</description>
+  <name>sit-ad-archetype-javaee7-web-min</name>
+  <description>archetype for javaee7 minimum web application,
+     useful for self study and developing new application.</description>
   <url>http://sitoolkit.org</url>
   <licenses>
     <license>

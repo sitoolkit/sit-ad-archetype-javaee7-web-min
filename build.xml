@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="javaee7-min-hibernate" default="hbm2java" basedir=".">
+<project name="javaee7-web-min" default="hbm2java" basedir=".">
 
   <taskdef name="hibernatetool"
            classname="org.hibernate.tool.ant.HibernateToolTask"

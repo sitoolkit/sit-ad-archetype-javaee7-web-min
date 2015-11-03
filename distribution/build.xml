@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="javaee7-min" basedir="." default="install">
+<project name="javaee7-web-min-distribution" basedir="." default="install">
 
   <property environment="env" />
   <property name="workdir" value="${basedir}/../../work" />
