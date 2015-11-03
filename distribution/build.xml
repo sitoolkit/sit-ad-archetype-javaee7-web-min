@@ -34,6 +34,8 @@
         <exclude name=".git" />
         <exclude name=".gitignore" />
         <exclude name="distribution/archetype/" />
+        <exclude name="LICENSE" />
+        <exclude name="NOTICE" />
         <exclude name="README.md" />
         <exclude name="target/**/*" />
         <exclude name="target" />
