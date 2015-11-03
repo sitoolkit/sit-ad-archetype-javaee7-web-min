@@ -85,13 +85,13 @@
             <artifactId>derby-maven-plugin</artifactId>
             <version>1.10</version>
             <configuration>
-                <derbyHome>${basedir}/tools/db/target</derbyHome>
+              <derbyHome>${basedir}/tools/derby/target</derbyHome>
             </configuration>
           </plugin>
         </plugins>
       </build>
     </profile>
-    
+
     <profile>
       <id>flyway</id>
       <build>
@@ -105,7 +105,7 @@
               <url>${db.jdbc.url}</url>
               <user>${db.username}</user>
               <locations>
-                <location>filesystem:${basedir}/tools/dev/flyway</location>
+                <location>filesystem:${basedir}/tools/flyway</location>
               </locations>
             </configuration>
             <dependencies>
@@ -141,7 +141,7 @@
         <defaultGoal>antrun:run</defaultGoal>
         <resources>
           <resource>
-            <directory>${basedir}/tools/dev/hibernate</directory>
+            <directory>${basedir}/tools/hibernate</directory>
             <includes>
               <include>hibernate.properties</include>
             </includes>
@@ -156,7 +156,7 @@
             <configuration>
               <target>
                 <property name="maven.classpath" refid="maven.runtime.classpath" />
-                <property name="destdir" value="${gentool.destdir}"/>
+                <property name="destdir" value="${gentool.destdir}" />
                 <ant antfile="${basedir}/build.xml" target="${ant.target}" />
               </target>
             </configuration>
@@ -164,7 +164,7 @@
         </plugins>
       </build>
     </profile>
-    
+
     <profile>
       <id>embedded-glassfish</id>
       <build>
