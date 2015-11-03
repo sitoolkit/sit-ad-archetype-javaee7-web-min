@@ -178,7 +178,7 @@
         <defaultGoal>process-resources embedded-glassfish:run</defaultGoal>
         <resources>
           <resource>
-            <directory>${basedir}/tools/as/embedded-glassfish</directory>
+            <directory>${basedir}/tools/embedded-glassfish</directory>
             <includes>
               <include>domain.xml</include>
             </includes>
