@@ -39,11 +39,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" output="target/webapp/WEB-INF/classes" path="target/generated-sources/hibernatetool">
-		<attributes>
-			<attribute name="optional" value="true"/>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="target/webapp/WEB-INF/classes"/>
 </classpath>
