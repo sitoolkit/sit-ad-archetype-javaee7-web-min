@@ -175,7 +175,7 @@
     <profile>
       <id>embedded-glassfish</id>
       <build>
-        <defaultGoal>process-resources embedded-glassfish:run</defaultGoal>
+        <defaultGoal>package embedded-glassfish:run</defaultGoal>
         <resources>
           <resource>
             <directory>${basedir}/tools/embedded-glassfish</directory>
