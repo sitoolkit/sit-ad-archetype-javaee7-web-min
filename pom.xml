@@ -102,7 +102,7 @@
     <profile>
       <id>flyway</id>
       <build>
-        <defaultGoal>compile flyway:migrate</defaultGoal>
+        <defaultGoal>flyway:migrate</defaultGoal>
         <plugins>
           <plugin>
             <groupId>org.flywaydb</groupId>
@@ -145,10 +145,10 @@
         <ant.target>hbm2java</ant.target>
       </properties>
       <build>
-        <defaultGoal>antrun:run</defaultGoal>
+        <defaultGoal>process-resources antrun:run</defaultGoal>
         <resources>
           <resource>
-            <directory>${basedir}/tools/hibernate</directory>
+            <directory>${basedir}/tools/hibernate-tools</directory>
             <includes>
               <include>hibernate.properties</include>
             </includes>
