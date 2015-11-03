@@ -8,7 +8,7 @@
   <target name="hbm2java">
     <hibernatetool destdir="${destdir}">
       <jdbcconfiguration packagename="package.name"
-                         revengfile="${basedir}/tools/hibernate/hibernate.reveng.xml"
+                         revengfile="${basedir}/tools/hibernate-tools/hibernate.reveng.xml"
                          propertyFile="${basedir}/target/hibernate.properties">
       </jdbcconfiguration>
       <hbm2java jdk5="true" ejb3="true" />

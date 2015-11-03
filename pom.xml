@@ -43,7 +43,7 @@
     <db.username>app</db.username>
     <db.password>app</db.password>
     <as.port>8080</as.port>
-    <gentool.destdir>${project.build.directory}/generated-sources/hibernatetool</gentool.destdir>
+    <hibernate-tools.destdir>${project.build.directory}/generated-sources/hibernate-tools</hibernate-tools.destdir>
   </properties>
 
   <!-- Build Settings -->
@@ -71,7 +71,7 @@
             </goals>
             <configuration>
               <sources>
-                <source>${gentool.destdir}</source>
+                <source>${hibernate-tools.destdir}</source>
               </sources>
             </configuration>
           </execution>
@@ -163,7 +163,7 @@
             <configuration>
               <target>
                 <property name="maven.classpath" refid="maven.runtime.classpath" />
-                <property name="destdir" value="${gentool.destdir}" />
+                <property name="destdir" value="${hibernate-tools.destdir}" />
                 <ant antfile="${basedir}/build.xml" target="${ant.target}" />
               </target>
             </configuration>
