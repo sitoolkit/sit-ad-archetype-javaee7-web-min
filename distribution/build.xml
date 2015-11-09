@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="javaee7-web-min-distribution" basedir="." default="install">
 
+  <property name="artifactId" value="javaee7-web-min"/>
   <property environment="env" />
   <property name="workdir" value="${basedir}/../../work" />
   <property name="resdir" value="${basedir}/archetype/src" />
@@ -74,7 +75,7 @@
 
     <move todir="${settings}" includeemptydirs="false">
       <fileset dir="${settings}" includes="*.launch" />
-      <globmapper from="${ant.project.name}*.launch" to="__artifactId__*.launch" />
+      <globmapper from="${artifactId}*.launch" to="__artifactId__*.launch" />
     </move>
 
   </target>
