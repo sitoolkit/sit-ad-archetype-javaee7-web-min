@@ -32,6 +32,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <antrun.version>1.8</antrun.version>
     <webappDirectory>${project.build.directory}/webapp</webappDirectory>
     <derby.client.version>10.10.1.1</derby.client.version>
     <db.jdbc.driver>org.apache.derby.jdbc.ClientDriver</db.jdbc.driver>
@@ -42,6 +43,7 @@
     <db.jdbc.url>jdbc:derby://${db.host}:${db.port}/${db.name};create=true</db.jdbc.url>
     <db.username>app</db.username>
     <db.password>app</db.password>
+    <as.host>localhost</as.host>
     <as.port>8080</as.port>
     <hibernate-tools.destdir>${project.build.directory}/generated-sources/hibernate-tools</hibernate-tools.destdir>
   </properties>
@@ -62,6 +64,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.9.1</version>
         <executions>
           <execution>
             <id>add-source</id>
@@ -159,12 +162,12 @@
         <plugins>
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.8</version>
+            <version>${antrun.version}</version>
             <configuration>
               <target>
                 <property name="maven.classpath" refid="maven.runtime.classpath" />
                 <property name="destdir" value="${hibernate-tools.destdir}" />
-                <ant antfile="${basedir}/build.xml" target="${ant.target}" />
+                <ant antfile="${basedir}/tools/hibernate-tools/build.xml" target="${ant.target}" />
               </target>
             </configuration>
           </plugin>
@@ -194,7 +197,7 @@
             <configuration>
               <configFile>${project.build.directory}/domain.xml</configFile>
               <systemProperties>
-                <property>glassfish.embedded.tmpdir=${project.build.directory}</property>
+                <!-- <property>glassfish.embedded.tmpdir=${project.build.directory}</property> -->
               </systemProperties>
             </configuration>
             <executions>
@@ -206,6 +209,69 @@
                 <configuration>
                   <app>${webappDirectory}</app>
                   <contextRoot>/</contextRoot>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>sit-wt</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.sitoolkit.wt</groupId>
+          <artifactId>sit-wt</artifactId>
+          <version>${sit-wt.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.seleniumhq.selenium</groupId>
+          <artifactId>selenium-java</artifactId>
+          <version>${selenium.version}</version>
+        </dependency>
+      </dependencies>
+      <properties>
+        <sit-wt.version>2.0.1</sit-wt.version>
+        <selenium.version>2.46.0</selenium.version>
+        <ant.target>gen-test</ant.target>
+      </properties>
+      <build>
+        <defaultGoal>antrun:run test</defaultGoal>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>${antrun.version}</version>
+            <configuration>
+              <target>
+                <property name="maven.classpath" refid="maven.test.classpath" />
+                <ant antfile="${basedir}/tools/sit-wt/build.xml" target="${ant.target}" />
+              </target>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemProperties>
+                <baseUrl>http://${as.host}:${as.port}/</baseUrl>
+              </systemProperties>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-test-source</id>
+                <phase>generate-test-sources</phase>
+                <goals>
+                  <goal>add-test-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>${project.build.directory}/generated-test-sources/test/</source>
+                  </sources>
                 </configuration>
               </execution>
             </executions>

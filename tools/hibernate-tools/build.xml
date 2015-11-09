@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="javaee7-web-min" default="hbm2java" basedir=".">
 
+  <property environment="env" />
+  
   <taskdef name="hibernatetool"
            classname="org.hibernate.tool.ant.HibernateToolTask"
            classpath="${maven.classpath}" />
@@ -14,4 +16,5 @@
       <hbm2java jdk5="true" ejb3="true" />
     </hibernatetool>
   </target>
+
 </project>
