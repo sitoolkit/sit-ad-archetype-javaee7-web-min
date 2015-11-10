@@ -12,10 +12,6 @@
   </condition>
 
   
-  <target name="show">
-    <echoproperties/>
-  </target>
-  
   <target name="install"
           depends="01_copy-archetype-work,02_create-from-archetype,03_copy-archetype-resource,04_install-archetype">
   </target>
@@ -38,8 +34,7 @@
         <exclude name="LICENSE" />
         <exclude name="NOTICE" />
         <exclude name="README.md" />
-        <exclude name="target/**/*" />
-        <exclude name="target" />
+        <exclude name="**/target/**" />
       </fileset>
     </copy>
 
