@@ -279,6 +279,111 @@
         </plugins>
       </build>
     </profile>
+
+    <profile>
+      <id>was-liberty</id>
+      <build>
+        <defaultGoal>antrun:run install liberty:install-apps liberty:run-server</defaultGoal>
+        <plugins>
+          <plugin>
+            <groupId>net.wasdev.wlp.maven.plugins</groupId>
+            <artifactId>liberty-maven-plugin</artifactId>
+            <version>1.2-SNAPSHOT</version>
+            <configuration>
+              <assemblyArtifact>
+                <groupId>com.ibm.websphere.appserver.runtime</groupId>
+                <artifactId>wlp-javaee7</artifactId>
+                <version>8.5.5.7</version>
+                <type>zip</type>
+              </assemblyArtifact>
+              <assemblyInstallDirectory>/opt/ibm</assemblyInstallDirectory>
+              <configFile>${basedir}/tools/was-liberty/server.xml</configFile>
+              <!-- <appArchive>${project.build.directory}/${project.build.finalName}.war</appArchive> -->
+              <bootstrapProperties>
+                <!-- <appLocation>${project.build.directory}/${project.build.finalName}</appLocation>  -->
+                <settings.localRepository>${settings.localRepository}</settings.localRepository>
+                <derby.client.version>${derby.client.version}</derby.client.version>
+                <db.name>${db.name}</db.name>
+                <db.host>${db.host}</db.host>
+                <db.port>${db.port}</db.port>
+                <db.username>${db.username}</db.username>
+                <db.password>${db.password}</db.password>
+                <as.port>${as.port}</as.port>
+              </bootstrapProperties>
+              <!--
+              <appArtifact>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>${project.artifactId}</artifactId>
+                <version>${project.version}</version>
+                <type>war</type>
+              </appArtifact> -->
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.8</version>
+            <configuration>
+              <target>
+                <echo message="copy ibm-web-ext.xml"/>
+                <copy file="${basedir}/tools/was-liberty/ibm-web-ext.xml"
+                  tofile="${webappDirectory}/WEB-INF/ibm-web-ext.xml"/>
+                <copy file="${basedir}/tools/was-liberty/ibm-web-ext.xml"
+                  tofile="${project.build.directory}/${project.build.finalName}/WEB-INF/ibm-web-ext.xml"/>
+              </target>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+      <dependencies>
+        <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>${project.artifactId}</artifactId>
+          <version>${project.version}</version>
+          <type>war</type>
+        </dependency>
+      </dependencies>
+      <repositories>
+        <repository>
+          <releases>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+            <updatePolicy>never</updatePolicy>
+          </snapshots>
+          <id>ibm-maven-repo</id>
+          <name>ibm-maven-repo</name>
+          <url>http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/maven/repository/</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <releases>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+            <updatePolicy>never</updatePolicy>
+          </snapshots>
+          <id>ibm-maven-repo</id>
+          <name>ibm-maven-repo</name>
+          <url>http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/maven/repository/</url>
+        </pluginRepository>
+        <pluginRepository>
+          <id>sonatype-nexus-snapshots</id>
+          <name>Sonatype Nexus Snapshots</name>
+          <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+
   </profiles>
 
 </project>
