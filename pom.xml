@@ -80,6 +80,26 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.gmaven</groupId>
+        <artifactId>groovy-maven-plugin</artifactId>
+        <version>2.0</version>
+        <executions>
+          <execution>
+            <id>convert-path-separator</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <source>
+project.properties['converted.build.directory']=project.build.directory.replace(File.separator,'/');
+project.properties['converted.localRepository']=settings.localRepository.replace(File.separator,'/');
+              </source>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
@@ -198,6 +218,7 @@
               <configFile>${project.build.directory}/domain.xml</configFile>
               <systemProperties>
                 <!-- <property>glassfish.embedded.tmpdir=${project.build.directory}</property> -->
+                <property>glassfish.embedded.tmpdir=${converted.build.directory}</property>
               </systemProperties>
             </configuration>
             <executions>
@@ -283,7 +304,17 @@
     <profile>
       <id>was-liberty</id>
       <build>
-        <defaultGoal>antrun:run install liberty:install-apps liberty:run-server</defaultGoal>
+        <defaultGoal>package liberty:run-server</defaultGoal>
+        <resources>
+          <resource>
+            <directory>${basedir}/tools/was-liberty</directory>
+            <includes>
+              <include>server.xml</include>
+            </includes>
+            <filtering>true</filtering>
+            <targetPath>${project.build.directory}</targetPath>
+          </resource>
+        </resources>
         <plugins>
           <plugin>
             <groupId>net.wasdev.wlp.maven.plugins</groupId>
@@ -296,12 +327,13 @@
                 <version>8.5.5.7</version>
                 <type>zip</type>
               </assemblyArtifact>
-              <assemblyInstallDirectory>/opt/ibm</assemblyInstallDirectory>
-              <configFile>${basedir}/tools/was-liberty/server.xml</configFile>
+              <!-- <assemblyInstallDirectory>/opt/ibm</assemblyInstallDirectory> -->
+              <configFile>${project.build.directory}/server.xml</configFile>
               <!-- <appArchive>${project.build.directory}/${project.build.finalName}.war</appArchive> -->
               <bootstrapProperties>
-                <!-- <appLocation>${project.build.directory}/${project.build.finalName}</appLocation>  -->
-                <settings.localRepository>${settings.localRepository}</settings.localRepository>
+                <appLocation>${converted.build.directory}/${project.build.finalName}</appLocation>
+                <appName>${project.artifactId}</appName>
+                <localRepository>${converted.localRepository}</localRepository>
                 <derby.client.version>${derby.client.version}</derby.client.version>
                 <db.name>${db.name}</db.name>
                 <db.host>${db.host}</db.host>
@@ -310,39 +342,10 @@
                 <db.password>${db.password}</db.password>
                 <as.port>${as.port}</as.port>
               </bootstrapProperties>
-              <!--
-              <appArtifact>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>${project.artifactId}</artifactId>
-                <version>${project.version}</version>
-                <type>war</type>
-              </appArtifact> -->
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.8</version>
-            <configuration>
-              <target>
-                <echo message="copy ibm-web-ext.xml"/>
-                <copy file="${basedir}/tools/was-liberty/ibm-web-ext.xml"
-                  tofile="${webappDirectory}/WEB-INF/ibm-web-ext.xml"/>
-                <copy file="${basedir}/tools/was-liberty/ibm-web-ext.xml"
-                  tofile="${project.build.directory}/${project.build.finalName}/WEB-INF/ibm-web-ext.xml"/>
-              </target>
             </configuration>
           </plugin>
         </plugins>
       </build>
-      <dependencies>
-        <dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>${project.artifactId}</artifactId>
-          <version>${project.version}</version>
-          <type>war</type>
-        </dependency>
-      </dependencies>
       <repositories>
         <repository>
           <releases>

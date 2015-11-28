@@ -7,8 +7,6 @@ start mvn -P derby
 mvn -P flyway
 mvn -P hibernate-tools
 
-set MAVEN_REPO=<maven local repository directory>
-mvn install
 start mvn -P was-liberty
 ```
 
