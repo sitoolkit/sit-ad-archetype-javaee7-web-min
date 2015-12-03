@@ -6,7 +6,7 @@
   <!-- The Basics -->
   <groupId>org.sitoolkit.ad.archetype</groupId>
   <artifactId>javaee7-web-min</artifactId>
-  <version>0.7-SNAPSHOT</version>
+  <version>0.7</version>
   <packaging>war</packaging>
   <dependencies>
     <dependency>
