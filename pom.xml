@@ -197,6 +197,9 @@ project.properties['converted.localRepository']=settings.localRepository.replace
 
     <profile>
       <id>embedded-glassfish</id>
+      <properties>
+        <maven.test.skip>true</maven.test.skip>
+      </properties>
       <build>
         <defaultGoal>package embedded-glassfish:run</defaultGoal>
         <resources>
@@ -303,6 +306,9 @@ project.properties['converted.localRepository']=settings.localRepository.replace
 
     <profile>
       <id>was-liberty</id>
+      <properties>
+        <maven.test.skip>true</maven.test.skip>
+      </properties>
       <build>
         <defaultGoal>package liberty:run-server</defaultGoal>
         <resources>
@@ -334,13 +340,6 @@ project.properties['converted.localRepository']=settings.localRepository.replace
                 <appLocation>${converted.build.directory}/${project.build.finalName}</appLocation>
                 <appName>${project.artifactId}</appName>
                 <localRepository>${converted.localRepository}</localRepository>
-                <derby.client.version>${derby.client.version}</derby.client.version>
-                <db.name>${db.name}</db.name>
-                <db.host>${db.host}</db.host>
-                <db.port>${db.port}</db.port>
-                <db.username>${db.username}</db.username>
-                <db.password>${db.password}</db.password>
-                <as.port>${as.port}</as.port>
               </bootstrapProperties>
             </configuration>
           </plugin>
