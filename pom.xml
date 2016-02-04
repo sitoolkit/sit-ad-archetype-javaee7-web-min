@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -27,12 +28,17 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.sitoolkit.wt</groupId>
+      <artifactId>sit-wt-runtime</artifactId>
+      <version>${sitwt.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <antrun.version>1.8</antrun.version>
     <webappDirectory>${project.build.directory}/webapp</webappDirectory>
     <derby.client.version>10.10.1.1</derby.client.version>
     <db.jdbc.driver>org.apache.derby.jdbc.ClientDriver</db.jdbc.driver>
@@ -45,7 +51,9 @@
     <db.password>app</db.password>
     <as.host>localhost</as.host>
     <as.port>8080</as.port>
+    <hibernate-tools.basedir>${project.basedir}/tools/hibernate-tools</hibernate-tools.basedir>
     <hibernate-tools.destdir>${project.build.directory}/generated-sources/hibernate-tools</hibernate-tools.destdir>
+    <sitwt.version>0.10</sitwt.version>
   </properties>
 
   <!-- Build Settings -->
@@ -60,6 +68,66 @@
         <targetPath>${webappDirectory}</targetPath>
       </resource>
     </resources>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.carlspring.maven</groupId>
+          <artifactId>derby-maven-plugin</artifactId>
+          <version>1.10</version>
+          <configuration>
+            <derbyHome>${basedir}/tools/derby/target</derbyHome>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.flywaydb</groupId>
+          <artifactId>flyway-maven-plugin</artifactId>
+          <version>3.2.1</version>
+          <configuration>
+            <url>${db.jdbc.url}</url>
+            <user>${db.username}</user>
+            <locations>
+              <location>filesystem:${basedir}/tools/flyway</location>
+            </locations>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.derby</groupId>
+              <artifactId>derbyclient</artifactId>
+              <version>${derby.client.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <!-- Hibernate Tools -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.8</version>
+          <configuration>
+            <target>
+              <property name="maven.classpath" refid="maven.plugin.classpath" />
+              <ant antfile="${hibernate-tools.basedir}/build.xml" />
+            </target>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.ant</groupId>
+              <artifactId>ant</artifactId>
+              <version>1.8.2</version>
+            </dependency>
+            <dependency>
+              <groupId>org.hibernate</groupId>
+              <artifactId>hibernate-tools</artifactId>
+              <version>4.3.1.Final</version>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.derby</groupId>
+              <artifactId>derbyclient</artifactId>
+              <version>${derby.client.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -78,6 +146,18 @@
               </sources>
             </configuration>
           </execution>
+          <execution>
+            <id>add-test-source</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-test-sources/test/</source>
+              </sources>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -93,10 +173,47 @@
             </goals>
             <configuration>
               <source>
-project.properties['converted.build.directory']=project.build.directory.replace(File.separator,'/');
-project.properties['converted.localRepository']=settings.localRepository.replace(File.separator,'/');
+                project.properties['converted.build.directory']=project.build.directory.replace(File.separator,'/');
+                project.properties['converted.localRepository']=settings.localRepository.replace(File.separator,'/');
               </source>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.sitoolkit.wt</groupId>
+        <artifactId>sit-wt-maven-plugin</artifactId>
+        <version>${sitwt.version}</version>
+        <executions>
+          <execution>
+            <id>generate-test-sources</id>
+            <goals>
+              <goal>selenium2script</goal>
+              <goal>script2java</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>open-evidence</id>
+            <goals>
+              <goal>open-evidence</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.19.1</version>
+        <configuration>
+          <systemPropertyVariables>
+            <baseUrl>http://${as.host}:${as.port}</baseUrl>
+          </systemPropertyVariables>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
@@ -106,105 +223,81 @@ project.properties['converted.localRepository']=settings.localRepository.replace
   <!-- Environment Settings -->
   <profiles>
     <profile>
-      <id>derby</id>
+      <id>db-migrate</id>
       <build>
-        <defaultGoal>derby:run</defaultGoal>
+        <defaultGoal>compile</defaultGoal>
         <plugins>
           <plugin>
             <groupId>org.carlspring.maven</groupId>
             <artifactId>derby-maven-plugin</artifactId>
-            <version>1.10</version>
-            <configuration>
-              <derbyHome>${basedir}/tools/derby/target</derbyHome>
-            </configuration>
+            <executions>
+              <execution>
+                <id>start</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>start-on-pre-integration-test</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-on-post-integration-test</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>flyway</id>
-      <build>
-        <defaultGoal>flyway:migrate</defaultGoal>
-        <plugins>
           <plugin>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-maven-plugin</artifactId>
-            <version>3.2.1</version>
-            <configuration>
-              <url>${db.jdbc.url}</url>
-              <user>${db.username}</user>
-              <locations>
-                <location>filesystem:${basedir}/tools/flyway</location>
-              </locations>
-            </configuration>
-            <dependencies>
-              <dependency>
-                <groupId>org.apache.derby</groupId>
-                <artifactId>derbyclient</artifactId>
-                <version>${derby.client.version}</version>
-              </dependency>
-            </dependencies>
+            <executions>
+              <execution>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>migrate</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>hibernate-tools</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.hibernate</groupId>
-          <artifactId>hibernate-tools</artifactId>
-          <version>4.3.1.Final</version>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.derby</groupId>
-          <artifactId>derbyclient</artifactId>
-          <version>${derby.client.version}</version>
-        </dependency>
-      </dependencies>
-      <properties>
-        <ant.target>hbm2java</ant.target>
-      </properties>
-      <build>
-        <defaultGoal>process-resources antrun:run</defaultGoal>
-        <resources>
-          <resource>
-            <directory>${basedir}/tools/hibernate-tools</directory>
-            <includes>
-              <include>hibernate.properties</include>
-            </includes>
-            <targetPath>${project.build.directory}</targetPath>
-            <filtering>true</filtering>
-          </resource>
-        </resources>
-        <plugins>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>${antrun.version}</version>
-            <configuration>
-              <target>
-                <property name="maven.classpath" refid="maven.runtime.classpath" />
-                <property name="destdir" value="${hibernate-tools.destdir}" />
-                <ant antfile="${basedir}/tools/hibernate-tools/build.xml" target="${ant.target}" />
-              </target>
-            </configuration>
+            <executions>
+              <execution>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
     </profile>
-
     <profile>
       <id>embedded-glassfish</id>
       <properties>
         <maven.test.skip>true</maven.test.skip>
       </properties>
       <build>
-        <defaultGoal>package embedded-glassfish:run</defaultGoal>
+        <defaultGoal>package embedded-glasfish:run</defaultGoal>
         <resources>
           <resource>
-            <directory>${basedir}/tools/embedded-glassfish</directory>
+            <directory>${project.basedir}/tools/embedded-glassfish</directory>
             <includes>
               <include>domain.xml</include>
             </includes>
@@ -223,94 +316,44 @@ project.properties['converted.localRepository']=settings.localRepository.replace
                 <!-- <property>glassfish.embedded.tmpdir=${project.build.directory}</property> -->
                 <property>glassfish.embedded.tmpdir=${converted.build.directory}</property>
               </systemProperties>
+              <app>${webappDirectory}</app>
+              <contextRoot>/</contextRoot>
             </configuration>
             <executions>
               <execution>
+                <id>deploy</id>
+                <phase>none</phase>
                 <goals>
                   <goal>deploy</goal>
                 </goals>
-                <phase>none</phase>
-                <configuration>
-                  <app>${webappDirectory}</app>
-                  <contextRoot>/</contextRoot>
-                </configuration>
               </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>sit-wt</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.sitoolkit.wt</groupId>
-          <artifactId>sit-wt</artifactId>
-          <version>${sit-wt.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.seleniumhq.selenium</groupId>
-          <artifactId>selenium-java</artifactId>
-          <version>${selenium.version}</version>
-        </dependency>
-      </dependencies>
-      <properties>
-        <sit-wt.version>2.0.1</sit-wt.version>
-        <selenium.version>2.46.0</selenium.version>
-        <ant.target>gen-test</ant.target>
-      </properties>
-      <build>
-        <defaultGoal>antrun:run test</defaultGoal>
-        <plugins>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <version>${antrun.version}</version>
-            <configuration>
-              <target>
-                <property name="maven.classpath" refid="maven.test.classpath" />
-                <ant antfile="${basedir}/tools/sit-wt/build.xml" target="${ant.target}" />
-              </target>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <systemProperties>
-                <baseUrl>http://${as.host}:${as.port}/</baseUrl>
-              </systemProperties>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <executions>
               <execution>
-                <id>add-test-source</id>
-                <phase>generate-test-sources</phase>
+                <id>start</id>
+                <phase>pre-integration-test</phase>
                 <goals>
-                  <goal>add-test-source</goal>
+                  <goal>start</goal>
+                  <goal>deploy</goal>
                 </goals>
-                <configuration>
-                  <sources>
-                    <source>${project.build.directory}/generated-test-sources/test/</source>
-                  </sources>
-                </configuration>
+              </execution>
+              <execution>
+                <id>stop</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
               </execution>
             </executions>
           </plugin>
         </plugins>
       </build>
     </profile>
-
     <profile>
       <id>was-liberty</id>
       <properties>
         <maven.test.skip>true</maven.test.skip>
       </properties>
       <build>
-        <defaultGoal>package liberty:run-server</defaultGoal>
+        <defaultGoal>packeage liberty:run-server</defaultGoal>
         <resources>
           <resource>
             <directory>${basedir}/tools/was-liberty</directory>
@@ -342,6 +385,22 @@ project.properties['converted.localRepository']=settings.localRepository.replace
                 <localRepository>${converted.localRepository}</localRepository>
               </bootstrapProperties>
             </configuration>
+            <executions>
+              <execution>
+                <id>start-server</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>start-server</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-server</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop-server</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
@@ -385,7 +444,6 @@ project.properties['converted.localRepository']=settings.localRepository.replace
         </pluginRepository>
       </pluginRepositories>
     </profile>
-
   </profiles>
 
 </project>
