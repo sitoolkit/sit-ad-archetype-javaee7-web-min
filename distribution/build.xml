@@ -22,7 +22,7 @@
   
   <target name="deploy">
     <property name="mvn.phase" value="install"/>
-    <antcall target="proces-all"/>
+    <antcall target="process-all"/>
   </target>
 
   
