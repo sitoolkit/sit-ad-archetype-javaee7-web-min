@@ -162,26 +162,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>groovy-maven-plugin</artifactId>
-        <version>2.0</version>
-        <executions>
-          <execution>
-            <id>convert-path-separator</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <source>
-                project.properties['converted.build.directory']=project.build.directory.replace(File.separator,'/');
-                project.properties['converted.localRepository']=settings.localRepository.replace(File.separator,'/');
-              </source>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.sitoolkit.wt</groupId>
         <artifactId>sit-wt-maven-plugin</artifactId>
         <version>${sitwt.version}</version>
@@ -315,7 +295,6 @@
               <configFile>${project.build.directory}/domain.xml</configFile>
               <systemProperties>
                 <!-- <property>glassfish.embedded.tmpdir=${project.build.directory}</property> -->
-                <property>glassfish.embedded.tmpdir=${converted.build.directory}</property>
               </systemProperties>
               <app>${webappDirectory}</app>
               <contextRoot>/</contextRoot>
@@ -381,9 +360,11 @@
               <configFile>${project.build.directory}/server.xml</configFile>
               <!-- <appArchive>${project.build.directory}/${project.build.finalName}.war</appArchive> -->
               <bootstrapProperties>
-                <appLocation>${converted.build.directory}/${project.build.finalName}</appLocation>
+<!--                 <appLocation>${converted.build.directory}/${project.build.finalName}</appLocation> -->
+                <appLocation>${project.build.directory}/${project.build.finalName}</appLocation>
                 <appName>${project.artifactId}</appName>
-                <localRepository>${converted.localRepository}</localRepository>
+<!--                 <localRepository>${converted.localRepository}</localRepository> -->
+                <localRepository>${settings.localRepository}</localRepository>
               </bootstrapProperties>
             </configuration>
             <executions>
