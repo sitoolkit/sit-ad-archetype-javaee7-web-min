@@ -360,10 +360,10 @@
               <configFile>${project.build.directory}/server.xml</configFile>
               <!-- <appArchive>${project.build.directory}/${project.build.finalName}.war</appArchive> -->
               <bootstrapProperties>
-<!--                 <appLocation>${converted.build.directory}/${project.build.finalName}</appLocation> -->
-                <appLocation>${project.build.directory}/${project.build.finalName}</appLocation>
+                <!-- <appLocation>${converted.build.directory}/${project.build.finalName}</appLocation> -->
+                <appLocation>${webappDirectory}</appLocation>
                 <appName>${project.artifactId}</appName>
-<!--                 <localRepository>${converted.localRepository}</localRepository> -->
+                <!-- <localRepository>${converted.localRepository}</localRepository> -->
                 <localRepository>${settings.localRepository}</localRepository>
               </bootstrapProperties>
             </configuration>
@@ -425,6 +425,18 @@
           </releases>
         </pluginRepository>
       </pluginRepositories>
+    </profile>
+
+    <profile>
+      <id>windows</id>
+      <activation>
+        <os>
+          <family>Windows</family>
+        </os>
+      </activation>
+      <properties>
+        <webappDirectory>${project.build.directory}¥webapp</webappDirectory>
+      </properties>
     </profile>
   </profiles>
 
