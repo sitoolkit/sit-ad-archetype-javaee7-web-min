@@ -8,24 +8,25 @@
   <property name="testArtifactId" value="javaee7-web-min-test" />
   <property name="testdir" value="${basedir}/../target/acceptance-test" />
 
-  
-  <condition property="mvn.cmd" value="${mvn.home}/bin/mvn.bat" else="${mvn.home}/bin/mvn">
+
+  <condition property="mvn.cmd" value="${env.MAVEN_HOME}/bin/mvn.cmd" else="${env.MAVEH_HOME}/bin/mvn">
     <os family="windows"/>
   </condition>
 
-  
+
   <target name="install">
+    <echoproperties></echoproperties>
     <property name="mvn.phase" value="install"/>
     <antcall target="process-all"/>
   </target>
 
-  
+
   <target name="deploy">
     <property name="mvn.phase" value="install"/>
     <antcall target="process-all"/>
   </target>
 
-  
+
   <target name="process-all">
     <antcall target="01_copy-archetype-work"/>
     <antcall target="02_create-from-archetype"/>
@@ -34,8 +35,8 @@
     <antcall target="05_acceptance-test"/>
   </target>
 
-      
-      
+
+
   <target name="01_copy-archetype-work">
 
     <delete dir="${workdir}" />
@@ -101,7 +102,7 @@
 
   </target>
 
-  
+
   <target name="05_acceptance-test">
 
     <delete dir="${testdir}" />
@@ -126,6 +127,7 @@
       <arg value="-Dmaven.test.skip=false"/>
       <arg value="-Devidence.open=false" />
       <arg value="-Das.port=8090"/>
+      <arg value="-Dfile.encoding=UTF-8"/>
       <arg value="verify"/>
     </exec>
 
@@ -135,6 +137,7 @@
       <arg value="-Dmaven.test.skip=false"/>
       <arg value="-Devidence.open=false" />
       <arg value="-Das.port=8090"/>
+      <arg value="-Dfile.encoding=UTF-8"/>
       <arg value="clean"/>
       <arg value="verify"/>
     </exec>
