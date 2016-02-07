@@ -435,7 +435,7 @@
         </os>
       </activation>
       <properties>
-        <webappDirectory>${project.build.directory}¥webapp</webappDirectory>
+        <webappDirectory>${project.build.directory}\webapp</webappDirectory>
       </properties>
     </profile>
   </profiles>
