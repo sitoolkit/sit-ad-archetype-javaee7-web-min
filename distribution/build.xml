@@ -9,7 +9,7 @@
   <property name="testdir" value="${basedir}/../target/acceptance-test" />
 
 
-  <condition property="mvn.cmd" value="${env.MAVEN_HOME}/bin/mvn.cmd" else="${env.MAVEH_HOME}/bin/mvn">
+  <condition property="mvn.cmd" value="${env.MAVEN_HOME}/bin/mvn.cmd" else="/usr/local/bin/mvn">
     <os family="windows"/>
   </condition>
 
@@ -123,7 +123,7 @@
 
     <exec executable="${mvn.cmd}" dir="${testdir}/${testArtifactId}" failonerror="true">
       <env key="JAVA_HOME" value="${java.home}" />
-      <arg value="-Pdb-migrate,embedded-glassfish"/>
+      <arg value="-Pdb-migrate,embedded-glassfish,it"/>
       <arg value="-Dmaven.test.skip=false"/>
       <arg value="-Devidence.open=false" />
       <arg value="-Das.port=8090"/>
@@ -133,7 +133,7 @@
 
     <exec executable="${mvn.cmd}" dir="${testdir}/${testArtifactId}" failonerror="true">
       <env key="JAVA_HOME" value="${java.home}" />
-      <arg value="-Pdb-migrate,was-liberty"/>
+      <arg value="-Pdb-migrate,was-liberty,it"/>
       <arg value="-Dmaven.test.skip=false"/>
       <arg value="-Devidence.open=false" />
       <arg value="-Das.port=8090"/>

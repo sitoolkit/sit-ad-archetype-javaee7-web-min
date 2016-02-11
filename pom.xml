@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -28,12 +29,6 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.sitoolkit.wt</groupId>
-      <artifactId>sit-wt-runtime</artifactId>
-      <version>${sitwt.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -53,7 +48,6 @@
     <as.port>8080</as.port>
     <hibernate-tools.basedir>${project.basedir}/tools/hibernate-tools</hibernate-tools.basedir>
     <hibernate-tools.destdir>${project.build.directory}/generated-sources/hibernate-tools</hibernate-tools.destdir>
-    <sitwt.version>0.10</sitwt.version>
   </properties>
 
   <!-- Build Settings -->
@@ -112,7 +106,7 @@
             <dependency>
               <groupId>org.apache.ant</groupId>
               <artifactId>ant</artifactId>
-              <version>1.8.2</version>
+              <version>1.9.6</version>
             </dependency>
             <dependency>
               <groupId>org.hibernate</groupId>
@@ -125,31 +119,6 @@
               <version>${derby.client.version}</version>
             </dependency>
           </dependencies>
-        </plugin>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.codehaus.gmaven</groupId>
-                    <artifactId>groovy-maven-plugin</artifactId>
-                    <versionRange>[2.0,)</versionRange>
-                    <goals>
-                      <goal>execute</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -170,55 +139,6 @@
                 <source>${hibernate-tools.destdir}</source>
               </sources>
             </configuration>
-          </execution>
-          <execution>
-            <id>add-test-source</id>
-            <phase>generate-test-sources</phase>
-            <goals>
-              <goal>add-test-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${project.build.directory}/generated-test-sources/test/</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.sitoolkit.wt</groupId>
-        <artifactId>sit-wt-maven-plugin</artifactId>
-        <version>${sitwt.version}</version>
-        <executions>
-          <execution>
-            <id>generate-test-sources</id>
-            <goals>
-              <goal>selenium2script</goal>
-              <goal>script2java</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>open-evidence</id>
-            <goals>
-              <goal>open-evidence</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.19.1</version>
-        <configuration>
-          <systemPropertyVariables>
-            <baseUrl>http://${as.host}:${as.port}</baseUrl>
-          </systemPropertyVariables>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>
@@ -293,6 +213,7 @@
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>embedded-glassfish</id>
       <properties>
@@ -351,10 +272,13 @@
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>was-liberty</id>
       <properties>
         <maven.test.skip>true</maven.test.skip>
+        <converted.build.directory>${project.build.directory}</converted.build.directory>
+        <converted.localRepository>${settings.localRepository}</converted.localRepository>
       </properties>
       <build>
         <defaultGoal>packeage liberty:run-server</defaultGoal>
@@ -380,9 +304,7 @@
                 <version>8.5.5.7</version>
                 <type>zip</type>
               </assemblyArtifact>
-              <!-- <assemblyInstallDirectory>/opt/ibm</assemblyInstallDirectory> -->
               <configFile>${project.build.directory}/server.xml</configFile>
-              <!-- <appArchive>${project.build.directory}/${project.build.finalName}.war</appArchive> -->
               <bootstrapProperties>
                 <appLocation>${converted.build.directory}/${project.build.finalName}</appLocation>
                 <appName>${project.artifactId}</appName>
@@ -453,6 +375,62 @@
     </profile>
 
     <profile>
+      <id>it</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.sitoolkit.wt</groupId>
+          <artifactId>sit-wt-runtime</artifactId>
+          <version>${sitwt.version}</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+      <properties>
+        <sitwt.version>0.11</sitwt.version>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sitoolkit.wt</groupId>
+            <artifactId>sit-wt-maven-plugin</artifactId>
+            <version>${sitwt.version}</version>
+            <executions>
+              <execution>
+                <id>generate-test-sources</id>
+                <goals>
+                  <goal>selenium2script</goal>
+                  <goal>script2java</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>open-evidence</id>
+                <goals>
+                  <goal>open-evidence</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>2.19.1</version>
+            <configuration>
+              <systemPropertyVariables>
+                <baseUrl>http://${as.host}:${as.port}</baseUrl>
+              </systemPropertyVariables>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
       <id>windows</id>
       <activation>
         <os>
@@ -460,6 +438,36 @@
         </os>
       </activation>
       <build>
+        <pluginManagement>
+          <plugins>
+            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence 
+              on the Maven build itself. -->
+            <plugin>
+              <groupId>org.eclipse.m2e</groupId>
+              <artifactId>lifecycle-mapping</artifactId>
+              <version>1.0.0</version>
+              <configuration>
+                <lifecycleMappingMetadata>
+                  <pluginExecutions>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.codehaus.gmaven</groupId>
+                        <artifactId>groovy-maven-plugin</artifactId>
+                        <versionRange>[2.0,)</versionRange>
+                        <goals>
+                          <goal>execute</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore></ignore>
+                      </action>
+                    </pluginExecution>
+                  </pluginExecutions>
+                </lifecycleMappingMetadata>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
         <plugins>
           <plugin>
             <groupId>org.codehaus.gmaven</groupId>
