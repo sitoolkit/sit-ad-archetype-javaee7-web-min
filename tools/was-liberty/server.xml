@@ -41,8 +41,8 @@
   </dataSource>
 
   <library id="DerbyLib">
-    <fileset dir="${localRepository}/org/apache/derby/derbyclient/${derby.client.version}" />
+    <fileset dir="${settings.localRepository}/org/apache/derby/derbyclient/${derby.client.version}" />
   </library>
-  
-  <webApplication id="${appName}" location="${appLocation}" name="${appName}" contextRoot="/"/>
+
+  <webApplication id="${project.artifactId}" location="${webappDirectory}" name="${project.artifactId}" contextRoot="/"/>
 </server>
