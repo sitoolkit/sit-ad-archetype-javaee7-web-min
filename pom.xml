@@ -220,7 +220,7 @@
         <maven.test.skip>true</maven.test.skip>
       </properties>
       <build>
-        <defaultGoal>package embedded-glasfish:run</defaultGoal>
+        <defaultGoal>package embedded-glassfish:run</defaultGoal>
         <resources>
           <resource>
             <directory>${project.basedir}/tools/embedded-glassfish</directory>
@@ -279,7 +279,7 @@
         <maven.test.skip>true</maven.test.skip>
       </properties>
       <build>
-        <defaultGoal>packeage liberty:run-server</defaultGoal>
+        <defaultGoal>package liberty:run-server</defaultGoal>
         <resources>
           <resource>
             <directory>${basedir}/tools/was-liberty</directory>
